@@ -61,16 +61,16 @@ namespace Microsoft.Extensions.DependencyInjection
             return services.AddIdentityServer();
         }
 
-        /// <summary>
-        /// Adds the IdentityServer.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        /// <param name="configuration">The configuration.</param>
-        /// <returns></returns>
-        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.Configure<IdentityServerOptions>(configuration);
-            return services.AddIdentityServer();
-        }
+        ///// <summary>
+        ///// Adds the IdentityServer.
+        ///// </summary>
+        ///// <param name="services">The services.</param>
+        ///// <param name="configuration">The configuration.</param>
+        ///// <returns></returns>
+        //public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IConfiguration configuration)
+        //{
+        //    services.Configure<IdentityServerOptions>(configuration);
+        //    return services.AddIdentityServer();
+        //}
     }
 }
