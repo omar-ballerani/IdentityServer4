@@ -50,7 +50,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddCookieAuthentication(this IIdentityServerBuilder builder)
         {
-            builder.Services.AddCookieAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme);
+            builder.Services.AddCookieAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme,(options)=>
+            {
+                options.CookieSameSite = SameSiteMode.None;
+            });
             builder.Services.AddCookieAuthentication(IdentityServerConstants.ExternalCookieAuthenticationScheme, options =>
             {
                 options.CookieName = IdentityServerConstants.ExternalCookieAuthenticationScheme;
