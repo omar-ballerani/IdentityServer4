@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.Authentication;
+using System;
 
 namespace IdentityServer4.UnitTests.Common
 {
@@ -16,14 +18,24 @@ namespace IdentityServer4.UnitTests.Common
         HttpContext _context = new DefaultHttpContext();
 
         public MockHttpContextAccessor(
+
             IdentityServerOptions options = null,
             IUserSession userSession = null,
-            IMessageStore<EndSession> endSessionStore = null)
+            IMessageStore<EndSession> endSessionStore = null    ,
+            Action<StubAuthenticationHandlerOptions> configureStub = null)
         {
             options = options ?? TestIdentityServerOptions.Create();
 
             var services = new ServiceCollection();
             services.AddSingleton(options);
+            if (configureStub != null)
+            {
+               // services.Configure(configureStub);
+                services.AddAuthentication().AddScheme<StubAuthenticationHandlerOptions, StubAuthenticationHandler>("idsrv", o =>
+                 {
+                     configureStub(o);
+                 });
+            }
             if (userSession == null)
             {
                 services.AddTransient<IUserSession, DefaultUserSession>();

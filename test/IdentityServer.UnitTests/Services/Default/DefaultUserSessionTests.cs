@@ -13,24 +13,31 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Services;
 using IdentityServer4.UnitTests.Common;
 using Xunit;
+using System.Collections.Generic;
 
 namespace IdentityServer4.UnitTests.Services.Default
 {
     public class DefaultUserSessionTests
     {
         DefaultUserSession _subject;
-        MockHttpContextAccessor _mockHttpContext = new MockHttpContextAccessor();
-        StubAuthenticationHandler _stubAuthHandler;
+
+        Action<StubAuthenticationHandlerOptions> ConfigureAuth { get; set; } = (o) => { };
+
+        MockHttpContextAccessor _mockHttpContext;
+        
+   //     StubAuthenticationHandler _stubAuthHandler;
         IdentityServerOptions _options = new IdentityServerOptions();
         ClaimsPrincipal _user;
-        string _scheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+      //  string _scheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
 
         public DefaultUserSessionTests()
         {
-            _user = IdentityServerPrincipal.Create("123", "bob");
-            _stubAuthHandler = new StubAuthenticationHandler(null, IdentityServerConstants.DefaultCookieAuthenticationScheme);
-            _mockHttpContext.HttpContext.GetAuthentication().Handler = _stubAuthHandler;
+            _mockHttpContext = new MockHttpContextAccessor( configureStub:(options) => ConfigureAuth(options)); 
 
+            _user = IdentityServerPrincipal.Create("123", "bob");
+         //   _stubAuthHandler = new StubAuthenticationHandler(null, IdentityServerConstants.DefaultCookieAuthenticationScheme);
+            // _mockHttpContext.HttpContext.GetAuthentication().Handler = _stubAuthHandler;
+            //_mockHttpContext.HttpContext.GetAuthentication().
             _subject = new DefaultUserSession(_mockHttpContext, _options, TestLogger.Create<DefaultUserSession>());
         }
 
@@ -84,9 +91,11 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task EnsureSessionIdCookieAsync_should_add_cookie()
         {
-            _stubAuthHandler.User = _user;
-            _stubAuthHandler.Properties.Add(DefaultUserSession.SessionIdKey, "999");
-
+            this.ConfigureAuth = (options) =>
+            {
+                options.User = _user;
+                options.Properties.Add(DefaultUserSession.SessionIdKey, "999");
+            };
             await _subject.EnsureSessionIdCookieAsync();
 
             var cookieContainer = new CookieContainer();
@@ -115,9 +124,11 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task RemoveSessionIdCookie_should_remove_cookie()
         {
-            _stubAuthHandler.User = _user;
-            _stubAuthHandler.Properties.Add(DefaultUserSession.SessionIdKey, "999");
-
+            this.ConfigureAuth = (options) =>
+            {
+                options.User = _user;
+                options.Properties.Add(DefaultUserSession.SessionIdKey, "999");
+            };
             await _subject.EnsureSessionIdCookieAsync();
 
             var cookieContainer = new CookieContainer();
@@ -140,8 +151,11 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task GetCurrentSessionIdAsync_when_user_is_authenticated_should_return_sid()
         {
-            _stubAuthHandler.User = _user;
-            _stubAuthHandler.Properties.Add(DefaultUserSession.SessionIdKey, "999");
+            this.ConfigureAuth = (options) =>
+            {
+                options.User = _user;
+                options.Properties.Add(DefaultUserSession.SessionIdKey, "999");
+            };
 
             var sid = await _subject.GetCurrentSessionIdAsync();
             sid.Should().Be("999");
@@ -157,17 +171,28 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task adding_client_should_set_item_in_cookie_properties()
         {
-            _stubAuthHandler.User = _user;
 
-            _stubAuthHandler.Properties.Count.Should().Be(0);
+            Dictionary<string, string> p= new Dictionary<string, string>();
+            this.ConfigureAuth = (options) =>
+            {
+                options.User = _user;
+                options.Properties = p;
+ 
+            };
+
+            p.Count.Should().Be(0);
             await _subject.AddClientIdAsync("client");
-            _stubAuthHandler.Properties.Count.Should().Be(1);
+            p.Count.Should().Be(1);
         }
 
         [Fact]
         public async Task when_authenticated_GetIdentityServerUserAsync_should_should_return_authenticated_user()
         {
-            _stubAuthHandler.User = _user;
+            this.ConfigureAuth = (options) =>
+            {
+                options.User = _user;
+             
+            };
 
             var user = await _subject.GetIdentityServerUserAsync();
             user.GetSubjectId().Should().Be("123");
@@ -176,7 +201,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task when_anonymous_GetIdentityServerUserAsync_should_should_return_null()
         {
-            _stubAuthHandler.User = null;
+           // _stubAuthHandler.User = null;
             var user = await _subject.GetIdentityServerUserAsync();
             user.Should().BeNull();
         }
@@ -184,21 +209,30 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task corrupt_properties_entry_should_clear_entry()
         {
-            _stubAuthHandler.User = _user;
+            Dictionary<string, string> p = null;
+            this.ConfigureAuth = (options) =>
+            {
+                options.User = _user;
+                p = options.Properties;
+            };
 
             await _subject.AddClientIdAsync("client");
-            var item = _stubAuthHandler.Properties.First();
-            _stubAuthHandler.Properties[item.Key] = "junk";
+            var item = p.First();
+            p[item.Key] = "junk";
 
             var clients = await _subject.GetClientListAsync();
             clients.Should().BeEmpty();
-            _stubAuthHandler.Properties.Count.Should().Be(0);
+            p.Count.Should().Be(0);
         }
 
         [Fact]
         public async Task adding_client_should_be_able_to_read_client()
         {
-            _stubAuthHandler.User = _user;
+            this.ConfigureAuth = (options) =>
+            {
+                options.User = _user;
+
+            };
 
             await _subject.AddClientIdAsync("client");
             var clients = await _subject.GetClientListAsync();
@@ -208,7 +242,11 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task adding_clients_should_be_able_to_read_clients()
         {
-            _stubAuthHandler.User = _user;
+              this.ConfigureAuth = (options) =>
+            {
+                options.User = _user;
+             
+            };
 
             await _subject.AddClientIdAsync("client1");
             await _subject.AddClientIdAsync("client2");

@@ -8,23 +8,23 @@ using System.Security.Claims;
 
 namespace IdentityServer4.UnitTests.Common
 {
-    public static class HttpContextExtensions
-    {
-        public static void SetUser(this HttpContext context, ClaimsPrincipal user, string scheme = null)
-        {
-            var auth = context.GetAuthentication();
-            auth.Handler = new StubAuthenticationHandler(user, scheme);
-        }
+    //public static class HttpContextExtensions
+    //{
+    //    public static void SetUser(this HttpContext context, ClaimsPrincipal user, string scheme = null)
+    //    {
+    //        var auth = context.GetAuthentication();
+    //        auth.Handler = new StubAuthenticationHandler(user, scheme);
+    //    }
 
-        public static IHttpAuthenticationFeature GetAuthentication(this HttpContext context)
-        {
-            var auth = context.Features.Get<IHttpAuthenticationFeature>();
-            if (auth == null)
-            {
-                auth = new HttpAuthenticationFeature();
-                context.Features.Set(auth);
-            }
-            return auth;
-        }
-    }
+    //    public static IHttpAuthenticationFeature GetAuthentication(this HttpContext context)
+    //    {
+    //        var auth = context.Features.Get<IHttpAuthenticationFeature>();
+    //        if (auth == null)
+    //        {
+    //            auth = new HttpAuthenticationFeature();
+    //            context.Features.Set(auth);
+    //        }
+    //        return auth;
+    //    }
+    //}
 }
