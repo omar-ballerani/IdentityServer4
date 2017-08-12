@@ -40,7 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddRequiredPlatformServices(this IIdentityServerBuilder builder)
         {
-            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();            
+            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddOptions();
             builder.Services.AddSingleton(
                 resolver => resolver.GetRequiredService<IOptions<IdentityServerOptions>>().Value);
@@ -50,24 +50,24 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddCookieAuthentication(this IIdentityServerBuilder builder)
         {
-            builder.Services.AddCookieAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme,(options)=>
-            {
-                options.CookieSameSite = SameSiteMode.None;
-            });
-            builder.Services.AddCookieAuthentication(IdentityServerConstants.ExternalCookieAuthenticationScheme, options =>
-            {
-                options.CookieName = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-            });
 
-            builder.Services.AddAuthentication(options =>
+
+            builder.AuthenticationBuilder = builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
                 options.DefaultChallengeScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
                 options.DefaultSignInScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-            });
+            }).AddCookie(IdentityServerConstants.DefaultCookieAuthenticationScheme, (options) =>
+            {
+                options.Cookie.SameSite = SameSiteMode.None;
+            })
+            .AddCookie(IdentityServerConstants.ExternalCookieAuthenticationScheme, options =>
+            {
+                options.Cookie.SameSite = SameSiteMode.None;
+            }); ;
 
             builder.Services.AddSingleton<IConfigureOptions<CookieAuthenticationOptions>, ConfigureInternalCookieOptions>();
-            
+
             return builder;
         }
 
@@ -130,7 +130,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<BearerTokenUsageValidator>();
             builder.Services.AddTransient<BackChannelLogoutClient>();
             builder.Services.AddTransient<HttpClient>();
-            
+
             builder.Services.AddTransient<ReturnUrlParser>();
             builder.Services.AddTransient<IdentityServerTools>();
 
@@ -203,7 +203,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // optional
             builder.Services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
             builder.Services.TryAddTransient<ICustomAuthorizeRequestValidator, DefaultCustomAuthorizeRequestValidator>();
-            
+
             return builder;
         }
 

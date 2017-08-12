@@ -5,12 +5,13 @@
 using IdentityServer4;
 using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Http
+namespace Microsoft.AspNetCore.Authentication
 {
     /// <summary>
     /// Extension methods for signin/out using the IdentityServer authentication scheme.
@@ -170,11 +171,11 @@ namespace Microsoft.AspNetCore.Http
         /// </summary>
         /// <param name="context">The manager.</param>
         /// <returns></returns>
-        public static async Task SignOutAsync(this HttpContext context)
-        {
-            var scheme = context.GetIdentityServerAuthenticationScheme();
-            await context.SignOutAsync(scheme);
-        }
+        //public static async Task SignOutAsync(this HttpContext context)
+        //{
+        //    var scheme = context.GetIdentityServerAuthenticationScheme();
+        //    await context.SignOutAsync(scheme);
+        //}
 
         /// <summary>
         /// Gets the IdentityServer authentication scheme.

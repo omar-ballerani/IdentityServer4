@@ -39,9 +39,10 @@ namespace Host
                 .AddSecretParser<ClientAssertionSecretParser>()
                 .AddSecretValidator<PrivateKeyJwtSecretValidator>()
                 .AddRedirectUriValidator<StrictRedirectUriValidatorAppAuth>()
-                .AddTestUsers(TestUsers.Users);
+                .AddTestUsers(TestUsers.Users)
+                .AddExternalIdentityProviders();
 
-            services.AddExternalIdentityProviders();
+           
 
             return services.BuildServiceProvider(validateScopes: true);
         }
@@ -59,16 +60,17 @@ namespace Host
 
     public static class ServiceExtensions
     {
-        public static IServiceCollection AddExternalIdentityProviders(this IServiceCollection services)
+        public static IIdentityServerBuilder AddExternalIdentityProviders(this IIdentityServerBuilder builder)
         {
-            services.AddGoogleAuthentication("Google", options =>
+
+            builder.AuthenticationBuilder.AddGoogle("Google", options =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                 options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
                 options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
             });
 
-            services.AddOpenIdConnectAuthentication("demoidsrv", options =>
+            builder.AuthenticationBuilder.AddOpenIdConnect("demoidsrv", options =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                 options.SignOutScheme = IdentityServerConstants.SignoutScheme;
@@ -90,7 +92,7 @@ namespace Host
                 };
             });
 
-            services.AddOpenIdConnectAuthentication("aad", options =>
+            builder.AuthenticationBuilder.AddOpenIdConnect("aad", options =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                 options.SignOutScheme = IdentityServerConstants.SignoutScheme;
@@ -110,7 +112,7 @@ namespace Host
                 };
             });
 
-            services.AddOpenIdConnectAuthentication("adfs", options =>
+            builder.AuthenticationBuilder.AddOpenIdConnect("adfs", options =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                 options.SignOutScheme = IdentityServerConstants.SignoutScheme;
@@ -130,7 +132,7 @@ namespace Host
                 };
             });
 
-            return services;
+            return builder;
         }
     }
 }

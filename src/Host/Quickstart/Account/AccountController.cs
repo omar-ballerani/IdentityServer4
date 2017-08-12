@@ -6,7 +6,6 @@ using IdentityModel;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Test;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -36,7 +35,7 @@ namespace IdentityServer4.Quickstart.UI
         public AccountController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
-            IHttpContextAccessor httpContextAccessor,
+            Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
             TestUserStore users = null)

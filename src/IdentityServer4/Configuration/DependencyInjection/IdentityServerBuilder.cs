@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Configuration
 {
@@ -29,5 +30,6 @@ namespace IdentityServer4.Configuration
         /// The services.
         /// </value>
         public IServiceCollection Services { get; }
+        public AuthenticationBuilder AuthenticationBuilder { get; set; }
     }
 }
