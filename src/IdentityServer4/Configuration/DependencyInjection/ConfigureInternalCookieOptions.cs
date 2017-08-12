@@ -1,5 +1,6 @@
 ﻿using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace IdentityServer4.Configuration
@@ -8,6 +9,7 @@ namespace IdentityServer4.Configuration
     {
         private readonly IdentityServerOptions _idsrv;
 
+        // todo: look at 2nd param and overall plumbing
         public ConfigureInternalCookieOptions(IdentityServerOptions idsrv)
             :base(IdentityServerConstants.DefaultCookieAuthenticationScheme, null)
         {
@@ -21,6 +23,7 @@ namespace IdentityServer4.Configuration
                 options.SlidingExpiration = _idsrv.Authentication.CookieSlidingExpiration;
                 options.ExpireTimeSpan = _idsrv.Authentication.CookieLifetime;
                 options.CookieName = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                options.CookieSameSite = SameSiteMode.None;
                 options.LoginPath = ExtractLocalUrl(_idsrv.UserInteraction.LoginUrl);
                 options.LogoutPath = ExtractLocalUrl(_idsrv.UserInteraction.LogoutUrl);
                 options.ReturnUrlParameter = _idsrv.UserInteraction.LoginReturnUrlParameter;

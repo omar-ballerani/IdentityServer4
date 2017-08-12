@@ -22,7 +22,7 @@ namespace Host
                 .MinimumLevel.Verbose()
                 .Enrich.FromLogContext()
                 .WriteTo.File(@"identityserver4_log.txt")
-                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Literate)
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Literate)
                 .CreateLogger();
 
             var host = new WebHostBuilder()
@@ -36,8 +36,9 @@ namespace Host
                     builder.AddProvider(new SerilogLoggerProvider());
 
                     builder.AddFilter("IdentityServer4", LogLevel.Debug);
-                    builder.AddFilter("System", LogLevel.Information);
-                    builder.AddFilter("Microsoft", LogLevel.Information);
+                    builder.AddFilter("System", LogLevel.Warning);
+                    builder.AddFilter("Microsoft", LogLevel.Warning);
+                    builder.AddFilter("Microsoft.AspNetCore.Authentication", LogLevel.Information);
                 })
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
