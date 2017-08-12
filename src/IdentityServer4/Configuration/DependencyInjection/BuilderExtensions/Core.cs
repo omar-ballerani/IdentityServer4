@@ -25,6 +25,8 @@ using IdentityServer4.Infrastructure;
 using System.Net.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using static IdentityServer4.Constants;
+using IdentityServer4.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
