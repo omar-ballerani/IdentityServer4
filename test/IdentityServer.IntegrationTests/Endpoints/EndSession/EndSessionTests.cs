@@ -87,7 +87,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             _mockPipeline.Initialize();
         }
 
-        [Fact(Skip = "AuthenticationService re-work")]
+        [Fact()]
         [Trait("Category", Category)]
         public async Task get_request_should_not_return_404()
         {
@@ -96,7 +96,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             response.StatusCode.Should().NotBe(HttpStatusCode.NotFound);
         }
 
-        [Fact(Skip = "AuthenticationService re-work")]
+        [Fact()]
         [Trait("Category", Category)]
         public async Task signout_request_should_redirect_to_logout_page()
         {
